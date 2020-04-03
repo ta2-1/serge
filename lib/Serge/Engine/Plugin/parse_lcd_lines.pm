@@ -45,20 +45,21 @@ sub parse {
         #print $line;
         #print "[$is_source]\n";    
         if ($is_source) {
-            my ($src_lang, $index) = $line =~ /^<(\w+)=(\d+)>/;
+            my $re = qr/^<(\w+)=(\d+)>(\s*(\[[^\]]\])\s*(\[[^\]]*\])?\s*)?/;
+            my ($src_lang, $index, $prefix, $ctxt, $time_code) = $line =~ m/${re}/;
             
             push @out, $line;
-            $line =~ s/^<(\w+)=(\d+)> //;
-            $sources{$index} = $line;
+            $line =~ s/${re}//;
+            $sources{$index} = { line => $line, ctxt => $ctxt, prefix => $prefix};
 
             next;
         }
         
         my ($tag) = $line =~ /(<\w+=\d+>)/;
         my ($dest_lang, $index) = $tag =~ /<(\w+)=(\d+)>/;
-        my $translation = &$callbackref($sources{$index}, $index, undef, undef, $lang, $index);
+        my $translation = &$callbackref($sources{$index}->{line}, $index." ".$sources{$index}->{ctxt}, undef, undef, $lang, $index);
         if ($lang) {
-            push @out, $tag.' '.$translation;
+            push @out, $tag.$sources{$index}->{prefix}.$translation;
         }
     }
 
