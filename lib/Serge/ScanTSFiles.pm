@@ -32,7 +32,7 @@ sub process_job {
 
     my $ts_file_path = $job->{ts_file_path};
     die "ERROR: ts_file_path not defined" unless $ts_file_path;
-    my ($ts_base_dir) = split(/[\\\/]%LOCALE%[\\\/]/, $ts_file_path);
+    my ($ts_base_dir) = split(/[\\\/]%LANG%[\\\/]/, $ts_file_path);
     # die here, otherwise there's a chance some translation interchange files will be deleted by mistake
     die "ERROR: ts_file_path has no %LOCALE% macro defined" unless $ts_base_dir;
     $ts_base_dir =~ s/\\/\//sg; # always use forward slash for consistency
